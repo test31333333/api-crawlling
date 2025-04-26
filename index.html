@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>صفحة HTML</title>
+</head>
+<body>
+    <h1>Welcome to FastAPI!</h1>
+<p>You can access the data at <a href="/news/">this link</a>.</p>
+    <img src="/static/el.png" alt="Illustrative image" />
+
+    <h2>Upload image</h2>
+    <form action="/upload/" method="post" enctype="multipart/form-data">
+        <input type="file" name="file" accept="image/*" required>
+        <button type="submit">Upload image</button>
+    </form>
+
+    <h2>Download Image</h2>
+    <p>You can download the image through <a href="/download/el.png">this link</a>.</p>
+</body>
+</html>
