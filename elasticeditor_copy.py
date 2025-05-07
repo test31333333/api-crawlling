@@ -37,6 +37,28 @@ class Question(BaseModel):
     category: Optional[str] = ""
     timestamp: Optional[str] = Field(default_factory=lambda: datetime.now().isoformat())
 
+
+class SearchQuery(BaseModel):
+    must: Optional[List[str]] = []
+    should: Optional[List[str]] = []
+    filter: Optional[List[str]] = []
+    must_not: Optional[List[str]] = []
+
+@app.post("/search/")
+def search_questions(query: SearchQuery):
+    es_query = {
+        "bool": {
+            "must": [{"multi_match": {"query": q, "fields": ["title", "paragraph", "keywords"]}} for q in query.must],
+            "should": [{"multi_match": {"query": q, "fields": ["title", "paragraph", "keywords"]}} for q in query.should],
+            "filter": [{"term": {"keywords": f}} for f in query.filter],
+            "must_not": [{"match": {"title": q}} for q in query.must_not],
+        }
+    }
+
+    res = es.search(index=INDEX_NAME, query=es_query)
+    return [hit["_source"] | {"id": hit["_id"]} for hit in res["hits"]["hits"]]
+
+
 @app.post("/questions/")
 def add_question(question: Question):
     res = es.index(index=INDEX_NAME, document=question.dict())
